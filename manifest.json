@@ -1,0 +1,95 @@
+{
+  "name":          "npm",
+  "version":       "0.1.0",
+  "description":   "npm registry connector — look up package metadata, search the index, and read download stats. Public registry by default; supports private registries via the registryUrl + token inputs (or a workspace `generic` config).",
+  "primaryOutput": "result",
+
+  "configRefs": [],
+
+  "inputSchema": {
+    "type": "object",
+    "required": ["operation"],
+    "properties": {
+      "operation": {
+        "type": "string",
+        "enum": [
+          "package.info",
+          "package.search",
+          "package.downloads"
+        ],
+        "description": "Which npm registry call to run."
+      },
+
+      "package": {
+        "type": "string",
+        "description": "Package name (scoped names like `@daisy-workflow/plugin-sdk` work). Required by package.info and package.downloads."
+      },
+
+      "version": {
+        "type": "string",
+        "description": "Optional version. When omitted package.info returns the full package document; when set it returns just that version's manifest (or 'latest' / 'beta' / any other dist-tag)."
+      },
+
+      "query": {
+        "type": "string",
+        "description": "Search text. Required by package.search. Supports the registry's qualifier syntax — e.g. 'react keywords:hooks maintainer:facebook'."
+      },
+
+      "size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 250,
+        "default": 20,
+        "description": "Page size for package.search (max 250 per the registry API)."
+      },
+
+      "from": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0,
+        "description": "Pagination offset for package.search."
+      },
+
+      "period": {
+        "type": "string",
+        "enum": ["last-day", "last-week", "last-month", "last-year"],
+        "default": "last-week",
+        "description": "Window for package.downloads."
+      },
+
+      "registryUrl": {
+        "type": "string",
+        "description": "Override the registry base URL for this call. Default: https://registry.npmjs.org. Set this for private registries (JFrog Artifactory, GitHub Packages, Verdaccio, etc.)."
+      },
+
+      "config": {
+        "type": "string",
+        "description": "Optional workspace `generic` config holding `registryUrl` and/or `token`. The token is sent as `Authorization: Bearer <token>` — useful for authenticated private registries. Node-level inputs win over the config."
+      },
+
+      "token": {
+        "type": "string",
+        "description": "Authentication token for private registries. Sent as Bearer auth. Prefer setting this via the `config` input so it stays encrypted at rest."
+      },
+
+      "timeoutMs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60000,
+        "default": 15000
+      }
+    }
+  },
+
+  "outputSchema": {
+    "type": "object",
+    "required": ["ok", "operation"],
+    "properties": {
+      "ok":        { "type": "boolean" },
+      "operation": { "type": "string" },
+      "status":    { "type": "integer", "description": "HTTP status from the registry call." },
+      "result":    { "description": "Operation-specific payload. The package document or version manifest for package.info; { results, total } for package.search; { downloads, start, end } for package.downloads." },
+      "url":       { "type": "string", "description": "Canonical npmjs.com URL for the package (when applicable)." }
+    }
+  }
+}
