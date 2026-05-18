@@ -2,6 +2,7 @@
   "name":          "npm",
   "version":       "0.1.0",
   "description":   "npm registry connector — look up package metadata, search the index, and read download stats. Public registry by default; supports private registries via the registryUrl + token inputs (or a workspace `generic` config).",
+  "ui":            { "category": "developer-tools", "icon": "npm" },
   "primaryOutput": "result",
 
   "configRefs": [],
