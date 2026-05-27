@@ -1,4 +1,4 @@
-# npm plugin for Daisy-workflow
+# npm plugin for Daisy AI Orchestrator
 
 One Daisy node that queries the npm registry. The action is selected
 per-node via the **operation** dropdown.
